@@ -38,7 +38,13 @@ const Homepage = () => {
         <header className="mb-8">
           <div className="relative h-64 bg-black text-white rounded-lg overflow-hidden">
             <div className="absolute inset-0 p-12 flex flex-col justify-center">
-              <h1 className="text-4xl font-bold mb-4">Bun venit la PetStore</h1>
+              <h1 className="text-4xl font-bold mb-4">
+                Bun venit la PetStore
+                <span className="text-4xl ml-5">
+                  {" "}
+                  Sectiunea - {activeTab.toUpperCase()}
+                </span>
+              </h1>
               <p className="text-xl mb-6">
                 Tot ce ai nevoie pentru animalul tău de companie
               </p>
