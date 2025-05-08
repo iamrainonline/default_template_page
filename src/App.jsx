@@ -8,7 +8,7 @@ import { div } from "framer-motion/client";
 
 const Layout = () => (
   <>
-    <Navbar />
+    {/* <Navbar /> */}
     <Outlet />
     <Footer />
   </>
