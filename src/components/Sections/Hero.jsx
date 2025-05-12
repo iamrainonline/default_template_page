@@ -1,290 +1,241 @@
 import { useState, useEffect, useRef } from "react";
-import * as THREE from "three";
-import { gsap } from "gsap";
-import { FiGithub, FiLinkedin, FiTwitter, FiMail } from "react-icons/fi";
+import { FiGithub, FiLinkedin, FiMail, FiArrowRight } from "react-icons/fi";
+import NameDemoCDN from "./animations/NameDemoCDN";
 
 const Hero = () => {
   const stats = [
-    { title: "Proiecte", value: "24+" },
-    { title: "Experiență", value: "5 ani" },
-    { title: "Tehnologii", value: "12+" },
+    { title: "Projects", value: "24+" },
+    { title: "Experience", value: "5 years" },
+    { title: "Technologies", value: "12+" },
   ];
 
   const socialLinks = [
-    { icon: <FiGithub />, url: "#" },
-    { icon: <FiLinkedin />, url: "#" },
-    { icon: <FiTwitter />, url: "#" },
-    { icon: <FiMail />, url: "#" },
+    { icon: <FiGithub size={18} />, url: "https://github.com/iamrainonline" },
+    {
+      icon: <FiLinkedin size={18} />,
+      url: "https://www.linkedin.com/in/cristian-candidatu/",
+    },
+    { icon: <FiMail size={18} />, url: "mailto:cristiancandidatu@Hotmail.com" },
   ];
 
-  const canvasRef = useRef(null);
-  const sceneRef = useRef(null);
-  const cubesRef = useRef([]);
-  const lastHoveredRef = useRef(null);
-  const animationRef = useRef(null);
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [windowWidth, setWindowWidth] = useState(0);
+  const heroRef = useRef(null);
 
+  // Effect to track window size (for responsive design)
   useEffect(() => {
-    if (!canvasRef.current) return;
-
-    // Setup
-    const width = window.innerWidth;
-    const height = window.innerHeight;
-
-    // Create scene and camera
-    const scene = new THREE.Scene();
-    const camera = new THREE.OrthographicCamera(
-      width / -8,
-      width / 8,
-      height / 8,
-      height / -8,
-      1,
-      1000
-    );
-    camera.position.z = 10;
-
-    // Renderer with higher contrast
-    const renderer = new THREE.WebGLRenderer({
-      canvas: canvasRef.current,
-      antialias: true,
-      alpha: true,
-    });
-    renderer.setSize(width, height);
-    renderer.setClearColor(0x000000, 0);
-
-    // Grid settings - more squares for finer grid
-    const cols = 36;
-    const cubeSize = width / cols;
-    const rows = Math.ceil(height / cubeSize);
-
-    // Geometry and materials
-    const geometry = new THREE.BoxGeometry(cubeSize, cubeSize, 0.1);
-    const edges = new THREE.EdgesGeometry(geometry);
-    const lineMaterial = new THREE.LineBasicMaterial({
-      color: "#334155",
-      opacity: 0.1,
-      transparent: true,
-    });
-
-    // Cube positioning offset
-    const offsetX = (cols * cubeSize) / 2 - cubeSize / 2;
-    const offsetY = (rows * cubeSize) / 2 - cubeSize / 2;
-
-    // Create cubes
-    const cubes = [];
-    for (let i = 0; i < cols; i++) {
-      for (let j = 0; j < rows; j++) {
-        const group = new THREE.Group();
-
-        // Fill material (transparent by default)
-        const fillMaterial = new THREE.MeshBasicMaterial({
-          color: "#4ade80",
-          transparent: true,
-          opacity: 0,
-        });
-        const mesh = new THREE.Mesh(geometry, fillMaterial);
-
-        // Border
-        const outline = new THREE.LineSegments(edges, lineMaterial);
-
-        group.add(mesh);
-        group.add(outline);
-
-        // Position group
-        group.position.x = i * cubeSize - offsetX;
-        group.position.y = j * cubeSize - offsetY;
-
-        scene.add(group);
-        cubes.push(mesh);
-      }
-    }
-
-    cubesRef.current = cubes;
-    sceneRef.current = scene;
-
-    // Raycaster and mouse
-    const raycaster = new THREE.Raycaster();
-    const mouse = new THREE.Vector2();
-
-    const handleMouseMove = (event) => {
-      mouse.x = (event.clientX / width) * 2 - 1;
-      mouse.y = -(event.clientY / height) * 2 + 1;
-
-      raycaster.setFromCamera(mouse, camera);
-      const intersects = raycaster.intersectObjects(cubesRef.current);
-
-      if (intersects.length > 0) {
-        const hovered = intersects[0].object;
-
-        // If new hover target
-        if (hovered !== lastHoveredRef.current) {
-          // Reset previous one
-          if (lastHoveredRef.current) {
-            gsap.to(lastHoveredRef.current.material, {
-              opacity: 0,
-              duration: 0.8,
-              ease: "power2.out",
-            });
-          }
-
-          // Fade in new hovered
-          gsap.to(hovered.material, {
-            opacity: 0.2,
-            duration: 0.4,
-            ease: "power2.out",
-          });
-
-          lastHoveredRef.current = hovered;
-        }
-      } else {
-        // No cube hovered now, fade out previous one
-        if (lastHoveredRef.current) {
-          gsap.to(lastHoveredRef.current.material, {
-            opacity: 0,
-            duration: 0.8,
-            ease: "power2.out",
-          });
-          lastHoveredRef.current = null;
-        }
-      }
-    };
-
-    window.addEventListener("mousemove", handleMouseMove);
-
-    // Handle resize
     const handleResize = () => {
-      const newWidth = window.innerWidth;
-      const newHeight = window.innerHeight;
-
-      renderer.setSize(newWidth, newHeight);
-      camera.left = newWidth / -2;
-      camera.right = newWidth / 2;
-      camera.top = newHeight / 2;
-      camera.bottom = newHeight / -2;
-      camera.updateProjectionMatrix();
+      setWindowWidth(window.innerWidth);
     };
+
+    // Set initial width
+    handleResize();
 
     window.addEventListener("resize", handleResize);
-
-    // Animation loop
-    const animate = () => {
-      animationRef.current = requestAnimationFrame(animate);
-      renderer.render(scene, camera);
-    };
-
-    animate();
-    setIsLoaded(true);
-
-    // Cleanup
     return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("resize", handleResize);
-
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
-      }
-
-      // Clean up THREE.js resources
-      scene.clear();
-      geometry.dispose();
-      edges.dispose();
-      lineMaterial.dispose();
-
-      cubesRef.current.forEach((cube) => {
-        cube.material.dispose();
-      });
-
-      renderer.dispose();
     };
   }, []);
 
+  // Effect to track mouse position (for hover effect on grid)
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      if (!heroRef.current) return;
+
+      const rect = heroRef.current.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      setMousePosition({ x, y });
+    };
+
+    // Add event listener only on desktop - save resources on mobile
+    if (windowWidth > 768) {
+      window.addEventListener("mousemove", handleMouseMove);
+    }
+
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+    };
+  }, [windowWidth]);
+
+  // Determine if we're on mobile or desktop
+  const isMobile = windowWidth < 768;
+
   return (
-    <div className="relative bg-black min-h-screen">
-      {/* Matrix-style background - always visible in the section */}
+    <div
+      ref={heroRef}
+      className="pt-10 relative bg-black min-h-screen w-full overflow-hidden flex items-center justify-center"
+    >
+      {/* Dark grid background - always visible in the section */}
       <div className="absolute inset-0 w-full h-full overflow-hidden pointer-events-none">
         <div className="absolute inset-0 opacity-5">
           <div className="w-full h-full bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
         </div>
         <div className="absolute inset-0 flex justify-between opacity-10">
-          {[...Array(10)].map((_, i) => (
+          {/* Reduce number of vertical lines on mobile for performance */}
+          {[...Array(isMobile ? 6 : 10)].map((_, i) => (
             <div key={i} className="w-px h-full bg-gray-600"></div>
           ))}
         </div>
       </div>
 
-      {/* Three.js canvas */}
-      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full z-0" />
+      {/* Reactive grid (desktop only - removed on mobile for performance) */}
+      {!isMobile && (
+        <div className="absolute inset-0 grid grid-cols-12 grid-rows-6 pointer-events-none">
+          {Array.from({ length: 12 * 6 }).map((_, index) => {
+            const col = index % 12;
+            const row = Math.floor(index / 12);
 
-      {/* Social media - left side */}
-      <div className="absolute left-10 top-1/2 transform -translate-y-1/2 z-20 flex flex-col items-center space-y-5">
-        {socialLinks.map((link, index) => (
-          <a
-            key={index}
-            href={link.url}
-            className="text-gray-400 hover:text-green-400 transition-colors text-xl"
+            // Calculate distance from mouse position to cell center (simplified)
+            const cellWidth = 100 / 12; // percentage
+            const cellHeight = 100 / 6; // percentage
+            const cellCenterX = (col + 0.5) * cellWidth;
+            const cellCenterY = (row + 0.5) * cellHeight;
+
+            const mouseX =
+              (mousePosition.x / (heroRef.current?.clientWidth || 1)) * 100;
+            const mouseY =
+              (mousePosition.y / (heroRef.current?.clientHeight || 1)) * 100;
+
+            const distance = Math.sqrt(
+              Math.pow(cellCenterX - mouseX, 2) +
+                Math.pow(cellCenterY - mouseY, 2)
+            );
+
+            // Opacity based on distance
+            const opacity = distance < 20 ? (1 - distance / 20) * 0.2 : 0;
+
+            return (
+              <div
+                key={index}
+                className="border border-gray-800/20"
+                style={{
+                  backgroundColor: `rgba(74, 222, 128, ${opacity})`,
+                  transition: "background-color 0.3s ease-out",
+                }}
+              />
+            );
+          })}
+        </div>
+      )}
+
+      {/* Green glow effects - resized and positioned differently on mobile */}
+      <div
+        className={`absolute bg-green-400 opacity-5 blur-3xl rounded-full ${
+          isMobile
+            ? "top-1/4 left-1/2 -translate-x-1/2 w-64 h-64"
+            : "top-1/3 left-1/4 w-96 h-96"
+        }`}
+      ></div>
+      <div
+        className={`absolute bg-green-400 opacity-5 blur-3xl rounded-full ${
+          isMobile
+            ? "bottom-1/4 left-1/2 -translate-x-1/2 w-48 h-48"
+            : "bottom-1/4 right-1/4 w-64 h-64"
+        }`}
+      ></div>
+
+      {/* Social media - left on desktop, bottom on mobile */}
+      {isMobile ? (
+        <div className="absolute bottom-4 left-0 right-0 z-20 flex justify-center space-x-8">
+          {socialLinks.map((link, index) => (
+            <a
+              key={index}
+              href={link.url}
+              className="text-gray-400 hover:text-green-400 transition-colors"
+            >
+              {link.icon}
+            </a>
+          ))}
+        </div>
+      ) : (
+        <div className="absolute left-6 md:left-10 top-1/2 transform -translate-y-1/2 z-20 flex flex-col items-center space-y-5">
+          {socialLinks.map((link, index) => (
+            <a
+              key={index}
+              href={link.url}
+              className="text-gray-400 hover:text-green-400 transition-colors"
+            >
+              {link.icon}
+            </a>
+          ))}
+          <div className="h-20 w-px bg-green-400/30 mt-4"></div>
+        </div>
+      )}
+
+      {/* Main Content - Perfectly centered */}
+      <div className="relative z-20 flex items-center justify-center min-h-screen w-full px-4 md:px-6">
+        <div className="container max-w-7xl mx-auto flex items-center justify-center">
+          {/* Hero Card - LARGER and perfectly centered */}
+          <div
+            className={`
+            relative bg-gray-900/80 backdrop-blur-md rounded-xl border border-gray-800 shadow-2xl overflow-hidden
+            w-full ${isMobile ? "max-w-xl" : "max-w-7xl"} my-auto
+          `}
           >
-            {link.icon}
-          </a>
-        ))}
-        <div className="h-20 w-px bg-green-400/30 mt-4"></div>
-      </div>
-
-      {/* Main Content */}
-      <div className="relative z-20 flex items-center justify-center min-h-screen px-6">
-        <div className="max-w-6xl w-full mx-auto">
-          {/* Hero Card */}
-          <div className="relative bg-gray-900/80 backdrop-blur-md rounded-xl border border-gray-800 shadow-2xl overflow-hidden">
             {/* Decorative corner effects */}
-            <div className="absolute top-0 left-0 w-20 h-20 border-t-2 border-l-2 border-green-400/30"></div>
-            <div className="absolute bottom-0 right-0 w-20 h-20 border-b-2 border-r-2 border-green-400/30"></div>
-            <div className="absolute -bottom-10 left-1/2 transform -translate-x-1/2 w-4/5 h-20 bg-green-400 opacity-5 blur-3xl rounded-full"></div>
+            <div className="absolute top-0 left-0 w-16 sm:w-24 h-16 sm:h-24 border-t-2 border-l-2 border-green-400/30"></div>
+            <div className="absolute bottom-0 right-0 w-16 sm:w-24 h-16 sm:h-24 border-b-2 border-r-2 border-green-400/30"></div>
+            <div className="absolute -bottom-10 left-1/2 transform -translate-x-1/2 w-4/5 h-20 bg-green-400 opacity-10 blur-3xl rounded-full"></div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
-              {/* Left Content */}
-              <div className="p-10 lg:p-16 flex flex-col justify-center">
-                <div className="mb-3 text-green-400 font-mono text-sm tracking-wider">
+            {/* Grid different on mobile vs desktop */}
+            <div
+              className={`${
+                isMobile
+                  ? "grid grid-cols-1 gap-0"
+                  : "grid grid-cols-1 lg:grid-cols-2 gap-0"
+              }`}
+            >
+              {/* Left Content - Adjusted padding and spacing for mobile */}
+              <div className="p-8 sm:p-10 lg:p-14 flex flex-col justify-center">
+                <div className="mb-4 text-green-400 font-mono text-sm tracking-wider">
                   FRONTEND DEVELOPER
                 </div>
+                <NameDemoCDN />
 
-                <h1 className="text-4xl md:text-6xl font-bold mb-6 text-white leading-tight">
-                  Cristian <span className="text-green-400">Candidatu</span>
-                </h1>
-
-                <p className="text-lg text-gray-300 max-w-2xl mb-8 leading-relaxed">
-                  Frontend Developer cu pasiune pentru interfețe rapide, moderne
-                  și scalabile, specializat în React și experiențe digitale
-                  interactive.
+                <p
+                  className={`${
+                    isMobile ? "text-base" : "text-lg"
+                  } text-gray-300 max-w-xl mb-8 sm:mb-10 leading-relaxed`}
+                >
+                  Frontend Developer passionate about fast, modern, and scalable
+                  interfaces, specialized in React and interactive digital
+                  experiences.
                 </p>
 
-                {/* Buttons */}
-                <div className="flex flex-wrap gap-4 mb-10">
-                  <button className="group px-6 py-3 bg-green-400 text-black font-medium rounded-md hover:bg-green-500 transition-all duration-300 flex items-center gap-2">
-                    <span>Vezi Portofoliu</span>
-                    <svg
-                      className="w-4 h-4 group-hover:translate-x-1 transition-transform"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M14 5l7 7m0 0l-7 7m7-7H3"
-                      />
-                    </svg>
-                  </button>
-                  <button className="px-6 py-3 border border-green-400/30 text-green-400 font-medium rounded-md hover:bg-green-400/10 transition-all duration-300">
-                    Contactează-mă
-                  </button>
+                {/* Buttons - larger with more padding */}
+                <div className="flex flex-wrap gap-4 sm:gap-5 mb-8 sm:mb-10">
+                  <a
+                    href="#portfolio"
+                    className={`
+                      group bg-green-500 text-black font-medium rounded-md hover:bg-green-400 
+                      transition-all duration-300 flex items-center gap-2
+                      ${isMobile ? "px-5 py-3 text-sm" : "px-8 py-4 text-base"}
+                    `}
+                  >
+                    <span>View Portfolio</span>
+                    <FiArrowRight className="group-hover:translate-x-1 transition-transform" />
+                  </a>
+
+                  <a
+                    href="#contact"
+                    className={`
+                      border border-green-400/40 text-green-400 font-medium rounded-md 
+                      hover:bg-green-400/10 transition-all duration-300
+                      ${isMobile ? "px-5 py-3 text-sm" : "px-8 py-4 text-base"}
+                    `}
+                  >
+                    Contact Me
+                  </a>
                 </div>
 
-                {/* Digital signature/code */}
-                <div className="font-mono text-xs text-gray-500 mt-auto">
+                {/* Digital signature/code - hidden on very small mobile */}
+                <div className="font-mono text-xs text-gray-500 mt-auto hidden sm:block">
                   <div className="flex items-center gap-2">
                     <span className="text-green-400">&gt;</span>
                     <code>
-                      const developer = new Developer('Cristian Candidatu');
+                      const developer = new Developer('Christian Candidate');
                     </code>
                   </div>
                   <div className="flex items-center gap-2">
@@ -294,72 +245,80 @@ const Hero = () => {
                 </div>
               </div>
 
-              {/* Right Content */}
-              <div className="relative p-10 lg:p-16 bg-gray-900/70 border-t lg:border-t-0 lg:border-l border-gray-800 flex flex-col">
-                {/* Top section */}
-                <div className="mb-10">
-                  <h2 className="font-mono text-green-400 text-sm uppercase mb-6 tracking-widest">
-                    Experiență & Abilități
+              {/* Right Content - Adjusted for mobile */}
+              <div className="relative p-8 sm:p-10 lg:p-14 bg-gray-950/50 border-t lg:border-t-0 lg:border-l border-gray-800 flex flex-col">
+                {/* Top section - adjusted for mobile */}
+                <div className="mb-8 sm:mb-10">
+                  <h2 className="font-mono text-green-400 text-sm uppercase mb-6 sm:mb-8 tracking-widest">
+                    Experience & Skills
                   </h2>
 
-                  {/* Tech banner */}
-                  <div className="relative overflow-hidden bg-gray-800/50 rounded-lg p-6 mb-6 border border-gray-700">
-                    <div className="absolute top-0 right-0 transform translate-x-1/4 -translate-y-1/4 w-40 h-40 bg-green-400/10 rounded-full blur-2xl"></div>
+                  {/* Tech banner - more prominent */}
+                  <div className="relative overflow-hidden bg-gray-800/80 rounded-lg p-6 sm:p-7 mb-8 border border-gray-700">
+                    <div className="absolute top-0 right-0 transform translate-x-1/4 -translate-y-1/4 w-48 h-48 bg-green-400/10 rounded-full blur-2xl"></div>
 
-                    <div className="text-4xl font-bold text-white mb-1">5+</div>
-                    <div className="text-sm text-gray-400 uppercase tracking-wider">
-                      Ani Experiență
+                    <div className="text-4xl sm:text-5xl font-bold text-white mb-2">
+                      5+
+                    </div>
+                    <div className="text-sm text-gray-300 uppercase tracking-wider">
+                      Years Experience
                     </div>
 
-                    <div className="mt-6 flex flex-wrap gap-2">
+                    <div className="mt-5 sm:mt-6 flex flex-wrap gap-2">
+                      {/* Reduced number of technologies on mobile */}
                       {[
                         "React",
                         "JavaScript",
                         "TypeScript",
-                        "Tailwind",
-                        "Node.js",
+                        ...(isMobile ? [] : ["Tailwind", "Node.js"]),
                       ].map((tech, i) => (
                         <span
                           key={i}
-                          className="px-3 py-1 text-xs rounded-full bg-gray-700 text-green-400 border border-gray-600"
+                          className="px-4 py-1.5 text-xs rounded-full bg-gray-700/80 text-green-400 border border-gray-600"
                         >
                           {tech}
                         </span>
                       ))}
+                      {/* "More" indicator on mobile */}
+                      {isMobile && (
+                        <span className="px-4 py-1.5 text-xs rounded-full bg-gray-700/80 text-gray-400 border border-gray-600">
+                          +2
+                        </span>
+                      )}
                     </div>
                   </div>
                 </div>
 
-                {/* Stats Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {/* Stats Grid - 3 column grid on mobile too */}
+                <div className="grid grid-cols-3 gap-3 sm:gap-5">
                   {stats.map((stat, index) => (
                     <div
                       key={index}
-                      className="relative overflow-hidden bg-gray-800/50 rounded-lg p-5 border border-gray-700 group hover:border-green-400/30 transition-colors duration-300"
+                      className="relative overflow-hidden bg-gray-800/80 rounded-lg p-4 sm:p-6 border border-gray-700 group hover:border-green-400/30 transition-colors duration-300"
                     >
                       <div className="absolute top-0 right-0 w-16 h-16 bg-green-400/5 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                      <p className="text-3xl font-bold text-green-400 mb-1">
+                      <p className="text-2xl sm:text-3xl font-bold text-green-400 mb-1">
                         {stat.value}
                       </p>
-                      <p className="text-xs text-gray-400 uppercase tracking-wider">
+                      <p className="text-xs text-gray-300 uppercase tracking-wider">
                         {stat.title}
                       </p>
                     </div>
                   ))}
                 </div>
 
-                {/* Bottom section with current status */}
-                <div className="mt-auto pt-10 flex items-center justify-between">
+                {/* Bottom section - adapted for mobile */}
+                <div className="mt-auto pt-8 sm:pt-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-0">
                   <div>
-                    <div className="inline-flex items-center px-3 py-1 rounded-full bg-green-400/10 border border-green-400/20">
-                      <span className="w-2 h-2 rounded-full bg-green-400 mr-2 animate-pulse"></span>
+                    <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-green-400/10 border border-green-400/30">
+                      <span className="w-2 h-2 rounded-full bg-green-400 mr-2 animate-[pulse_2s_cubic-bezier(0.4,0,0.6,1)_infinite]"></span>
                       <span className="text-xs text-green-400">
-                        Disponibil pentru proiecte
+                        {isMobile ? "Available" : "Available for projects"}
                       </span>
                     </div>
                   </div>
 
-                  <div className="font-mono text-sm text-gray-500">
+                  <div className="font-mono text-sm text-gray-400">
                     <span className="text-green-400">01</span>
                     <span className="mx-1">/</span>
                     <span>04</span>
