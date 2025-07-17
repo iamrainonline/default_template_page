@@ -10,11 +10,21 @@ import {
 // Date pentru experiențe
 const experiences = [
   {
+    title: "Codezilla.ro",
+    date: "Mar 2021 - Aug 2021",
+    info: "Codezilla.ro - Web development & services",
+    skills: ["React", "Tailwind CSS", "JavaScript"],
+    company: "Frontend Developer",
+    achievements: [
+      "Designed and build static frontend web pages and templates for companies of all sizes. Created resizable and reusable Ads and Banners using CSS,HTML, Photoshop, Javascript and GSAP Library",
+    ],
+  },
+  {
     title: "Plant An App",
-    date: "2019 - 2020",
+    date: "Aug 2021 - Now 2022",
     info: "PlantAnApp.com - A low-code, cloud-based platform for rapid web apps.",
     skills: ["React", "Redux", "Performance", "SPA"],
-    company: "Frontend Developer",
+    company: "Fullstack Developer",
     achievements: [
       "Built web applications using the PlantAnApp platform, customizing functionality with JavaScript, C#, and CSS.",
       "Designed and structured relational databases (T-SQL) for client applications,performing database architecture and planning based on specific business requirements.",
@@ -22,7 +32,7 @@ const experiences = [
   },
   {
     title: "i-Tom Solutions",
-    date: "2022 - 2023",
+    date: "Nov 2022 - Sep 2023",
     info: "i-Tom Solutions - Control & Intelligence (C2I) Systems Development.",
     skills: ["Figma", "Wireframing", "UX Design", "Prototyping"],
     company: "Frontend Designer",
@@ -33,10 +43,10 @@ const experiences = [
   },
   {
     title: "Zamolx.ro",
-    date: "2023 - 2025",
+    date: "Nov 2023 - May 2025",
     info: "Zamolx.ro | Zamolxis.org - Web development & Cybersecurity services",
     skills: ["React", "Tailwind CSS", "JavaScript", "PHP", "React Native"],
-    company: "Frontend Developer",
+    company: "Fullstack Developer",
     achievements: [
       "Built training.simulatedsecurity.com, a web application for interactive cybersecurity training.",
       "Worked on a real-time personal security app in React Native, PHP and MySQL allowing users to request emergency assistance via an SOS button.",
@@ -310,7 +320,7 @@ const Experience = () => {
         <div className="container max-w-7xl mx-auto px-6 md:px-8 relative">
           {/* Section Header */}
           <div className="mb-12 md:mb-16 text-center relative">
-            <div className="absolute -top-16 left-1/2 transform -translate-x-1/2 text-6xl md:text-9xl font-bold text-white opacity-5">
+            <div className="absolute -top-16 left-1/2 transform -translate-x-1/2 text-6xl md:text-9xl font-bold text-white opacity-[10%]">
               EXPERIENCE
             </div>
             <div className="font-mono text-green-400 text-sm uppercase mb-2 tracking-widest">
@@ -504,7 +514,7 @@ const Experience = () => {
                             key={i}
                             cx={x}
                             cy={y}
-                            r="1.5"
+                            r="2.0"
                             fill={inProgress ? "#4ade80" : "#4b5563"}
                             opacity={inProgress ? "1" : "0.3"}
                           />

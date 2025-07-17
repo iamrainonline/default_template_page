@@ -7,7 +7,6 @@ const Homepage = () => {
   return (
     <div className="relative">
       <Hero />
-      <Spacer />
       <Experience />
       <Spacer />
       <Projects />

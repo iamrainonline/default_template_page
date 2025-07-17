@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { FiGithub, FiLinkedin, FiMail, FiArrowRight } from "react-icons/fi";
-import NameDemoCDN from "./animations/NameDemoCDN";
+import { FiGithub, FiLinkedin, FiMail } from "react-icons/fi";
 
 const Hero = () => {
   const stats = [
@@ -10,16 +9,29 @@ const Hero = () => {
   ];
 
   const socialLinks = [
-    { icon: <FiGithub size={18} />, url: "https://github.com/iamrainonline" },
     {
-      icon: <FiLinkedin size={18} />,
-      url: "https://www.linkedin.com/in/cristian-candidatu/",
+      id: 1,
+      icon: <FiGithub size={16} />,
+      url: "https://github.com/iamrainonline",
+      label: "GitHub",
     },
-    { icon: <FiMail size={18} />, url: "mailto:cristiancandidatu@Hotmail.com" },
+    {
+      id: 2,
+      icon: <FiLinkedin size={16} />,
+      url: "https://www.linkedin.com/in/cristian-candidatu/",
+      label: "LinkedIn",
+    },
+    {
+      id: 3,
+      icon: <FiMail size={16} />,
+      url: "mailto:cristiancandidatu@Hotmail.com",
+      label: "Email",
+    },
   ];
 
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [windowWidth, setWindowWidth] = useState(0);
+  const [hoveredSocial, setHoveredSocial] = useState(null);
   const heroRef = useRef(null);
 
   // Effect to track window size (for responsive design)
@@ -59,22 +71,62 @@ const Hero = () => {
     };
   }, [windowWidth]);
 
+  // Handle hover for social icons
+  const handleSocialHover = (socialId) => {
+    setHoveredSocial(socialId);
+  };
+
   // Determine if we're on mobile or desktop
   const isMobile = windowWidth < 768;
 
   return (
     <div
       ref={heroRef}
-      className="pt-10 relative bg-black min-h-screen w-full overflow-hidden flex items-center justify-center"
+      className="relative bg-black min-h-screen w-full overflow-hidden flex items-center justify-center"
     >
+      {/* Fixed Social Media Links - desktop only */}
+      <div className="fixed left-4 top-1/2 transform -translate-y-1/2 z-50 hidden md:flex flex-col items-center gap-4">
+        {socialLinks.map((link) => (
+          <a
+            key={link.id}
+            href={link.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="relative group"
+            onMouseEnter={() => handleSocialHover(link.id)}
+            onMouseLeave={() => handleSocialHover(null)}
+          >
+            <div
+              className={`p-2 rounded-full flex items-center justify-center transition-all duration-300 ${
+                hoveredSocial === link.id
+                  ? "bg-green-400 text-black"
+                  : "bg-gray-800/70 text-gray-400 hover:bg-gray-700"
+              }`}
+            >
+              {link.icon}
+            </div>
+            <div
+              className={`absolute left-10 whitespace-nowrap bg-gray-800 text-white text-xs px-2 py-1 rounded-md transition-all duration-300 ${
+                hoveredSocial === link.id
+                  ? "opacity-100 translate-x-0"
+                  : "opacity-0 -translate-x-2 pointer-events-none"
+              }`}
+            >
+              {link.label}
+            </div>
+          </a>
+        ))}
+        <div className="h-14 w-px bg-green-400/30 mt-2"></div>
+      </div>
+
       {/* Dark grid background - always visible in the section */}
       <div className="absolute inset-0 w-full h-full overflow-hidden pointer-events-none">
         <div className="absolute inset-0 opacity-5">
-          <div className="w-full h-full bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
+          <div className="w-full h-full bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:18px_18px]"></div>
         </div>
         <div className="absolute inset-0 flex justify-between opacity-10">
           {/* Reduce number of vertical lines on mobile for performance */}
-          {[...Array(isMobile ? 6 : 10)].map((_, i) => (
+          {[...Array(isMobile ? 4 : 10)].map((_, i) => (
             <div key={i} className="w-px h-full bg-gray-600"></div>
           ))}
         </div>
@@ -120,64 +172,36 @@ const Hero = () => {
         </div>
       )}
 
-      {/* Green glow effects - resized and positioned differently on mobile */}
+      {/* Green glow effects - smaller */}
       <div
         className={`absolute bg-green-400 opacity-5 blur-3xl rounded-full ${
           isMobile
-            ? "top-1/4 left-1/2 -translate-x-1/2 w-64 h-64"
-            : "top-1/3 left-1/4 w-96 h-96"
+            ? "top-1/4 left-1/2 -translate-x-1/2 w-32 h-32"
+            : "top-1/3 left-1/4 w-64 h-64"
         }`}
       ></div>
       <div
         className={`absolute bg-green-400 opacity-5 blur-3xl rounded-full ${
           isMobile
-            ? "bottom-1/4 left-1/2 -translate-x-1/2 w-48 h-48"
-            : "bottom-1/4 right-1/4 w-64 h-64"
+            ? "bottom-1/4 left-1/2 -translate-x-1/2 w-24 h-24"
+            : "bottom-1/4 right-1/4 w-48 h-48"
         }`}
       ></div>
 
-      {/* Social media - left on desktop, bottom on mobile */}
-      {isMobile ? (
-        <div className="absolute bottom-4 left-0 right-0 z-20 flex justify-center space-x-8">
-          {socialLinks.map((link, index) => (
-            <a
-              key={index}
-              href={link.url}
-              className="text-gray-400 hover:text-green-400 transition-colors"
-            >
-              {link.icon}
-            </a>
-          ))}
-        </div>
-      ) : (
-        <div className="absolute left-6 md:left-10 top-1/2 transform -translate-y-1/2 z-20 flex flex-col items-center space-y-5">
-          {socialLinks.map((link, index) => (
-            <a
-              key={index}
-              href={link.url}
-              className="text-gray-400 hover:text-green-400 transition-colors"
-            >
-              {link.icon}
-            </a>
-          ))}
-          <div className="h-20 w-px bg-green-400/30 mt-4"></div>
-        </div>
-      )}
-
-      {/* Main Content - Perfectly centered */}
-      <div className="relative z-20 flex items-center justify-center min-h-screen w-full px-4 md:px-6">
-        <div className="container max-w-7xl mx-auto flex items-center justify-center">
-          {/* Hero Card - LARGER and perfectly centered */}
+      {/* Main Content - 30% smaller */}
+      <div className="relative z-20 flex flex-col items-center justify-center min-h-screen w-full px-3 md:px-4">
+        <div className="container max-w-5xl mx-auto flex flex-col items-center justify-center">
+          {/* Hero Card - 30% smaller */}
           <div
             className={`
-            relative bg-gray-900/80 backdrop-blur-md rounded-xl border border-gray-800 shadow-2xl overflow-hidden
-            w-full ${isMobile ? "max-w-xl" : "max-w-7xl"} my-auto
+            relative bg-gray-900/80 backdrop-blur-md rounded-lg border border-gray-800 shadow-2xl overflow-hidden
+            w-full ${isMobile ? "max-w-md my-8" : "max-w-5xl my-auto"}
           `}
           >
-            {/* Decorative corner effects */}
-            <div className="absolute top-0 left-0 w-16 sm:w-24 h-16 sm:h-24 border-t-2 border-l-2 border-green-400/30"></div>
-            <div className="absolute bottom-0 right-0 w-16 sm:w-24 h-16 sm:h-24 border-b-2 border-r-2 border-green-400/30"></div>
-            <div className="absolute -bottom-10 left-1/2 transform -translate-x-1/2 w-4/5 h-20 bg-green-400 opacity-10 blur-3xl rounded-full"></div>
+            {/* Decorative corner effects - smaller */}
+            <div className="absolute top-0 left-0 w-8 sm:w-16 h-8 sm:h-16 border-t-2 border-l-2 border-green-400/30"></div>
+            <div className="absolute bottom-0 right-0 w-8 sm:w-16 h-8 sm:h-16 border-b-2 border-r-2 border-green-400/30"></div>
+            <div className="absolute -bottom-7 left-1/2 transform -translate-x-1/2 w-3/5 h-14 bg-green-400 opacity-10 blur-3xl rounded-full"></div>
 
             {/* Grid different on mobile vs desktop */}
             <div
@@ -187,85 +211,108 @@ const Hero = () => {
                   : "grid grid-cols-1 lg:grid-cols-2 gap-0"
               }`}
             >
-              {/* Left Content - Adjusted padding and spacing for mobile */}
-              <div className="p-8 sm:p-10 lg:p-14 flex flex-col justify-center">
-                <div className="mb-4 text-green-400 font-mono text-sm tracking-wider">
-                  FRONTEND DEVELOPER
+              {/* Left Content - 30% smaller */}
+              <div
+                className={`${
+                  isMobile ? "p-4" : "p-6 sm:p-7 lg:p-10"
+                } flex flex-col justify-center`}
+              >
+                <div className="mb-2 sm:mb-3 text-green-400 font-mono text-xs tracking-wider">
+                  Software Developer
                 </div>
-                <NameDemoCDN />
+
+                {/* Name */}
+                <div
+                  className={`${isMobile ? "scale-90 -ml-2" : ""} origin-left`}
+                >
+                  <h1 className="text-white text-3xl sm:text-4xl lg:text-5xl font-bold mb-2">
+                    Cristian Candidatu
+                  </h1>
+                </div>
 
                 <p
                   className={`${
-                    isMobile ? "text-base" : "text-lg"
-                  } text-gray-300 max-w-xl mb-8 sm:mb-10 leading-relaxed`}
+                    isMobile ? "text-sm mt-1" : "text-base mt-2"
+                  } text-gray-300 max-w-lg mb-4 sm:mb-7 leading-relaxed`}
                 >
-                  Frontend Developer passionate about fast, modern, and scalable
+                  Software Developer passionate about fast, modern, and scalable
                   interfaces, specialized in React and interactive digital
                   experiences.
                 </p>
 
-                {/* Buttons - larger with more padding */}
-                <div className="flex flex-wrap gap-4 sm:gap-5 mb-8 sm:mb-10">
-                  <a
-                    href="#portfolio"
-                    className={`
-                      group bg-green-500 text-black font-medium rounded-md hover:bg-green-400 
-                      transition-all duration-300 flex items-center gap-2
-                      ${isMobile ? "px-5 py-3 text-sm" : "px-8 py-4 text-base"}
-                    `}
-                  >
-                    <span>View Portfolio</span>
-                    <FiArrowRight className="group-hover:translate-x-1 transition-transform" />
-                  </a>
-
+                {/* Buttons - smaller */}
+                <div className="flex flex-wrap gap-2 sm:gap-3 mb-4 sm:mb-7">
                   <a
                     href="#contact"
                     className={`
                       border border-green-400/40 text-green-400 font-medium rounded-md 
                       hover:bg-green-400/10 transition-all duration-300
-                      ${isMobile ? "px-5 py-3 text-sm" : "px-8 py-4 text-base"}
+                      ${isMobile ? "px-3 py-1.5 text-xs" : "px-6 py-3 text-sm"}
                     `}
                   >
-                    Contact Me
+                    Let's work together
                   </a>
                 </div>
 
-                {/* Digital signature/code - hidden on very small mobile */}
-                <div className="font-mono text-xs text-gray-500 mt-auto hidden sm:block">
+                {/* Digital signature/code - smaller */}
+                <div className="font-mono text-xs text-gray-500 mt-auto hidden md:block">
                   <div className="flex items-center gap-2">
                     <span className="text-green-400">&gt;</span>
-                    <code>
-                      const developer = new Developer('Christian Candidate');
+                    <code className="text-xs">
+                      const developer = new Developer('Cristian Candidatu');
                     </code>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-green-400">&gt;</span>
-                    <code>developer.createAwesomeExperiences();</code>
+                    <code className="text-xs">
+                      developer.createAwesomeExperiences();
+                    </code>
                   </div>
                 </div>
               </div>
 
-              {/* Right Content - Adjusted for mobile */}
-              <div className="relative p-8 sm:p-10 lg:p-14 bg-gray-950/50 border-t lg:border-t-0 lg:border-l border-gray-800 flex flex-col">
-                {/* Top section - adjusted for mobile */}
-                <div className="mb-8 sm:mb-10">
-                  <h2 className="font-mono text-green-400 text-sm uppercase mb-6 sm:mb-8 tracking-widest">
+              {/* Right Content - 30% smaller */}
+              <div
+                className={`relative ${
+                  isMobile ? "p-4 pt-0" : "p-6 sm:p-7 lg:p-10"
+                } bg-gray-950/50 border-t lg:border-t-0 lg:border-l border-gray-800 flex flex-col`}
+              >
+                {/* Top section - smaller */}
+                <div className={`${isMobile ? "mb-4" : "mb-6 sm:mb-7"}`}>
+                  <h2
+                    className={`font-mono text-green-400 text-xs uppercase ${
+                      isMobile ? "mb-3" : "mb-4 sm:mb-5"
+                    } tracking-widest`}
+                  >
                     Experience & Skills
                   </h2>
 
-                  {/* Tech banner - more prominent */}
-                  <div className="relative overflow-hidden bg-gray-800/80 rounded-lg p-6 sm:p-7 mb-8 border border-gray-700">
-                    <div className="absolute top-0 right-0 transform translate-x-1/4 -translate-y-1/4 w-48 h-48 bg-green-400/10 rounded-full blur-2xl"></div>
+                  {/* Tech banner - smaller */}
+                  <div
+                    className={`relative overflow-hidden bg-gray-800/80 rounded-lg ${
+                      isMobile ? "p-3" : "p-4 sm:p-5"
+                    } ${isMobile ? "mb-4" : "mb-6"} border border-gray-700`}
+                  >
+                    <div className="absolute top-0 right-0 transform translate-x-1/4 -translate-y-1/4 w-24 sm:w-32 h-24 sm:h-32 bg-green-400/10 rounded-full blur-2xl"></div>
 
-                    <div className="text-4xl sm:text-5xl font-bold text-white mb-2">
+                    <div
+                      className={`${
+                        isMobile ? "text-2xl" : "text-3xl sm:text-4xl"
+                      } font-bold text-white mb-1`}
+                    >
                       5+
                     </div>
-                    <div className="text-sm text-gray-300 uppercase tracking-wider">
+                    <div
+                      className={`text-xs text-gray-300 uppercase tracking-wider`}
+                    >
                       Years Experience
                     </div>
 
-                    <div className="mt-5 sm:mt-6 flex flex-wrap gap-2">
-                      {/* Reduced number of technologies on mobile */}
+                    <div
+                      className={`${
+                        isMobile ? "mt-3" : "mt-4"
+                      } flex flex-wrap gap-1.5`}
+                    >
                       {[
                         "React",
                         "JavaScript",
@@ -274,14 +321,18 @@ const Hero = () => {
                       ].map((tech, i) => (
                         <span
                           key={i}
-                          className="px-4 py-1.5 text-xs rounded-full bg-gray-700/80 text-green-400 border border-gray-600"
+                          className={`${
+                            isMobile
+                              ? "px-2 py-0.5 text-xs"
+                              : "px-3 py-1 text-xs"
+                          } rounded-full bg-gray-700/80 text-green-400 border border-gray-600`}
                         >
                           {tech}
                         </span>
                       ))}
                       {/* "More" indicator on mobile */}
                       {isMobile && (
-                        <span className="px-4 py-1.5 text-xs rounded-full bg-gray-700/80 text-gray-400 border border-gray-600">
+                        <span className="px-2 py-0.5 text-xs rounded-full bg-gray-700/80 text-gray-400 border border-gray-600">
                           +2
                         </span>
                       )}
@@ -289,15 +340,21 @@ const Hero = () => {
                   </div>
                 </div>
 
-                {/* Stats Grid - 3 column grid on mobile too */}
-                <div className="grid grid-cols-3 gap-3 sm:gap-5">
+                {/* Stats Grid - smaller */}
+                <div className="grid grid-cols-3 gap-1.5 sm:gap-3">
                   {stats.map((stat, index) => (
                     <div
                       key={index}
-                      className="relative overflow-hidden bg-gray-800/80 rounded-lg p-4 sm:p-6 border border-gray-700 group hover:border-green-400/30 transition-colors duration-300"
+                      className={`relative overflow-hidden bg-gray-800/80 rounded-lg ${
+                        isMobile ? "p-2" : "p-3 sm:p-4"
+                      } border border-gray-700 group hover:border-green-400/30 transition-colors duration-300`}
                     >
-                      <div className="absolute top-0 right-0 w-16 h-16 bg-green-400/5 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                      <p className="text-2xl sm:text-3xl font-bold text-green-400 mb-1">
+                      <div className="absolute top-0 right-0 w-12 h-12 bg-green-400/5 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                      <p
+                        className={`${
+                          isMobile ? "text-lg" : "text-xl sm:text-2xl"
+                        } font-bold text-green-400 mb-0.5`}
+                      >
                         {stat.value}
                       </p>
                       <p className="text-xs text-gray-300 uppercase tracking-wider">
@@ -307,18 +364,30 @@ const Hero = () => {
                   ))}
                 </div>
 
-                {/* Bottom section - adapted for mobile */}
-                <div className="mt-auto pt-8 sm:pt-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-0">
+                {/* Bottom section - smaller */}
+                <div className="mt-auto pt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
                   <div>
-                    <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-green-400/10 border border-green-400/30">
-                      <span className="w-2 h-2 rounded-full bg-green-400 mr-2 animate-[pulse_2s_cubic-bezier(0.4,0,0.6,1)_infinite]"></span>
-                      <span className="text-xs text-green-400">
+                    <div
+                      className={`inline-flex items-center ${
+                        isMobile ? "px-2 py-1" : "px-3 py-1"
+                      } rounded-full bg-green-400/10 border border-green-400/30`}
+                    >
+                      <span className="w-1.5 h-1.5 rounded-full bg-green-400 mr-1.5 animate-[pulse_2s_cubic-bezier(0.4,0,0.6,1)_infinite]"></span>
+                      <span
+                        className={`${
+                          isMobile ? "text-xs" : "text-xs"
+                        } text-green-400`}
+                      >
                         {isMobile ? "Available" : "Available for projects"}
                       </span>
                     </div>
                   </div>
 
-                  <div className="font-mono text-sm text-gray-400">
+                  <div
+                    className={`font-mono ${
+                      isMobile ? "text-xs" : "text-sm"
+                    } text-gray-400`}
+                  >
                     <span className="text-green-400">01</span>
                     <span className="mx-1">/</span>
                     <span>04</span>
@@ -328,7 +397,57 @@ const Hero = () => {
             </div>
           </div>
         </div>
+
+        {/* Social media for mobile only - smaller */}
+        {isMobile && (
+          <div className="w-full flex justify-center space-x-4 py-4 z-20">
+            {socialLinks.map((link, index) => (
+              <a
+                key={index}
+                href={link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-400 hover:text-green-400 transition-colors p-1.5"
+              >
+                {link.icon}
+              </a>
+            ))}
+          </div>
+        )}
+
+        {/* Scroll indicator animation - smaller */}
+        <div className="mt-6 flex flex-col items-center mb-4 z-20">
+          <div className="text-gray-400 text-xs font-mono mb-1.5 opacity-70">
+            SCROLL
+          </div>
+          <div className="w-5 h-8 border-2 border-gray-400 rounded-full flex justify-center opacity-70">
+            <div className="scroll-dot w-1 h-1 bg-green-400 rounded-full mt-1.5 animate-scrollDown"></div>
+          </div>
+        </div>
       </div>
+
+      {/* Styles - adjusted for smaller size */}
+      <style jsx global>{`
+        /* Animation for scroll indicator */
+        @keyframes scrollDown {
+          0% {
+            transform: translateY(0);
+            opacity: 0.8;
+          }
+          50% {
+            transform: translateY(18px);
+            opacity: 1;
+          }
+          100% {
+            transform: translateY(0);
+            opacity: 0.8;
+          }
+        }
+
+        .animate-scrollDown {
+          animation: scrollDown 2s ease-in-out infinite;
+        }
+      `}</style>
     </div>
   );
 };

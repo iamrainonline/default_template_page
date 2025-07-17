@@ -9,20 +9,20 @@ const Projects = () => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const sectionRef = useRef(null);
 
-  // Detectăm lățimea ferestrei pentru comportament responsive
+  // Detect window width for responsive behavior
   useEffect(() => {
     const handleResize = () => {
       setWindowWidth(window.innerWidth);
     };
 
-    // Setăm starea inițială
+    // Set initial state
     handleResize();
 
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Efect pentru a urmări poziția mouse-ului (pentru efectul de hover pe grid)
+  // Effect to track mouse position (for grid hover effect)
   useEffect(() => {
     const handleMouseMove = (e) => {
       if (!sectionRef.current) return;
@@ -34,7 +34,7 @@ const Projects = () => {
       setMousePosition({ x, y });
     };
 
-    // Adăugăm event listener doar pe desktop - economisim resurse pe mobil
+    // Add event listener only on desktop - save resources on mobile
     if (windowWidth > 768) {
       window.addEventListener("mousemove", handleMouseMove);
     }
@@ -44,80 +44,85 @@ const Projects = () => {
     };
   }, [windowWidth]);
 
-  // Determinăm dacă suntem pe mobil sau desktop
+  // Determine if on mobile or desktop
   const isMobile = windowWidth < 768;
 
   // Project data
   const projects = [
     {
       id: 1,
-      title: "E-commerce Dashboard",
+      title: "Pong Game",
       description:
-        "Dashboard interactiv pentru managementul produselor și analiza vânzărilor, cu focus pe UX și performanță.",
-      technologies: ["React", "Redux", "Tailwind CSS", "Chart.js"],
+        "Classic Pong game implementation with simple yet addictive gameplay, score tracking and responsive controls.",
+      technologies: ["JavaScript", "HTML5", "CSS3", "Canvas API"],
       links: {
-        live: "#",
-        github: "#",
+        live: "https://pongrain.netlify.app/",
+        github: "https://github.com/iamrainonline/JSGames",
       },
       featured: true,
     },
     {
       id: 2,
-      title: "Task Management App",
+      title: "Flappy Bird Clone",
       description:
-        "Aplicație completă pentru managementul proiectelor și sarcinilor cu funcționalități de colaborare în timp real.",
-      technologies: ["Next.js", "TypeScript", "Supabase", "TailwindCSS"],
+        "Recreation of the popular Flappy Bird game with smooth physics and responsive controls.",
+      technologies: ["JavaScript", "HTML Canvas", "CSS", "Game Physics"],
       links: {
-        live: "#",
-        github: "#",
+        live: "https://flappyrain.netlify.app/",
+        github: "https://github.com/iamrainonline/JSGames",
       },
       featured: false,
     },
     {
       id: 3,
-      title: "Travel Booking Platform",
+      title: "Type Racer Game",
       description:
-        "Platformă de rezervări cu integrare de plăți și sistem de recenzii pentru diverse destinații turistice.",
-      technologies: ["React", "Node.js", "MongoDB", "Stripe API"],
+        "Fast-paced typing game that challenges players to improve their typing speed and accuracy with real-time feedback.",
+      technologies: ["JavaScript", "HTML5", "CSS3", "Web Audio API"],
       links: {
-        live: "#",
-        github: "#",
+        live: "https://typeracerrain.netlify.app/",
+        github: "https://github.com/iamrainonline/JSGames",
       },
       featured: false,
     },
     {
       id: 4,
-      title: "Portfolio Website",
+      title: "Memory Game",
       description:
-        "Site de portofoliu modern cu animații fluide și interacțiuni dinamice, optimizat pentru performanță.",
-      technologies: ["React", "Three.js", "GSAP", "Tailwind CSS"],
+        "Interactive card matching memory game with beautiful animations, sound effects, and score tracking.",
+      technologies: [
+        "JavaScript",
+        "CSS Animations",
+        "Local Storage",
+        "DOM Manipulation",
+      ],
       links: {
-        live: "#",
-        github: "#",
+        live: "https://memorygame4.netlify.app/",
+        github: "https://github.com/iamrainonline/mymusic",
       },
       featured: true,
     },
     {
       id: 5,
-      title: "Weather Dashboard",
+      title: "Quizz Night",
       description:
-        "Dashboard pentru informații meteo în timp real cu vizualizări interactive și prognoze detaliate.",
-      technologies: ["JavaScript", "Weather API", "Chart.js", "CSS3"],
+        "Interactive quiz game with various categories and difficulty levels to test your knowledge.",
+      technologies: ["JavaScript", "CSS3", "Local Storage", "HTML5"],
       links: {
-        live: "#",
-        github: "#",
+        live: "https://youtu.be/J6VFT_3k_5Q",
+        github: "https://github.com/iamrainonline/QuizzChampion",
       },
       featured: false,
     },
     {
       id: 6,
-      title: "Social Media Platform",
+      title: "Fullstack Blog",
       description:
-        "Platformă de social media cu funcționalități de mesagerie, partajare conținut și networking.",
-      technologies: ["React", "Firebase", "Material UI", "Redux"],
+        "A full-stack blog application with content management functionality.",
+      technologies: ["React", "Node.js", "Express", "MongoDB"],
       links: {
-        live: "#",
-        github: "#",
+        live: "https://github.com/iamrainonline/backend",
+        github: "https://github.com/iamrainonline/backend",
       },
       featured: false,
     },
@@ -169,7 +174,7 @@ const Projects = () => {
         </div>
       </div>
 
-      {/* Reactive grid (doar pe desktop - eliminat pe mobil pentru performanță) */}
+      {/* Reactive grid (desktop only - removed on mobile for performance) */}
       {!isMobile && (
         <div className="absolute inset-0 grid grid-cols-12 grid-rows-12 pointer-events-none">
           {Array.from({ length: 12 * 12 }).map((_, index) => {
@@ -178,7 +183,7 @@ const Projects = () => {
 
             // Calculate distance from mouse position to cell center (simplified)
             const cellWidth = 100 / 12; // percentage
-            const cellHeight = 100 / 12; // percentage - acum e pătrat
+            const cellHeight = 100 / 12; // percentage - now square
             const cellCenterX = (col + 0.5) * cellWidth;
             const cellCenterY = (row + 0.5) * cellHeight;
 
@@ -226,25 +231,24 @@ const Projects = () => {
       ></div>
 
       <div className="container max-w-7xl mx-auto px-6 relative z-10">
-        {/* Section Header - îmbunătățit */}
+        {/* Section Header - improved */}
         <div className="mb-20 md:mb-24 text-center relative">
-          <div className="absolute -top-16 left-1/2 transform -translate-x-1/2 text-6xl md:text-9xl font-bold text-white opacity-5">
+          <div className="absolute -top-16 left-1/2 transform -translate-x-1/2 text-6xl md:text-9xl font-bold text-white opacity-[10%]">
             PROJECTS
           </div>
           <div className="font-mono text-green-400 text-sm uppercase mb-2 md:mb-3 tracking-widest">
             Portfolio
           </div>
           <h2 className="text-3xl md:text-5xl font-bold text-white mb-4 md:mb-6">
-            Proiecte <span className="text-green-400">Recente</span>
+            Recent <span className="text-green-400">Projects</span>
           </h2>
           <p className="text-gray-300 max-w-3xl mx-auto text-sm md:text-base leading-relaxed">
-            O selecție din proiectele mele recente care demonstrează abilitățile
-            și pasiunea mea pentru dezvoltarea de interfețe moderne și
-            funcționale.
+            A selection of my recent projects that demonstrate my skills and
+            passion for developing modern and functional interfaces.
           </p>
         </div>
 
-        {/* Projects Grid - Folder ca element principal */}
+        {/* Projects Grid - Folder as main element */}
         <div
           ref={projectsRef}
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-20 md:gap-x-8 md:gap-y-24"
@@ -256,19 +260,19 @@ const Projects = () => {
               onMouseEnter={() => handleProjectHover(project.id)}
               onMouseLeave={() => handleProjectHover(null)}
             >
-              {/* Folder este CARDUL */}
+              {/* Folder is the CARD */}
               <div className="relative mb-5 mx-auto">
                 <div className="relative group/folder flex flex-col items-center justify-center w-full">
                   <div className="file relative w-[260px] h-[160px] cursor-pointer origin-bottom [perspective:1500px] z-50">
-                    {/* Folder exterior - culoare galbenă originală */}
+                    {/* Folder exterior - original yellow color */}
                     <div className="work-5 bg-amber-600 w-full h-full origin-top rounded-2xl rounded-tl-none group-hover/folder:shadow-[0_20px_40px_rgba(0,0,0,.3)] transition-all ease duration-300 relative after:absolute after:content-[''] after:bottom-[99%] after:left-0 after:w-20 after:h-4 after:bg-amber-600 after:rounded-t-2xl before:absolute before:content-[''] before:-top-[15px] before:left-[75.5px] before:w-4 before:h-4 before:bg-amber-600 before:[clip-path:polygon(0_35%,0%_100%,50%_100%);]"></div>
 
-                    {/* Folder straturi interioare */}
+                    {/* Folder interior layers */}
                     <div className="work-4 absolute inset-1 bg-zinc-400 rounded-2xl transition-all ease duration-300 origin-bottom select-none group-hover/folder:[transform:rotateX(-20deg)]"></div>
                     <div className="work-3 absolute inset-1 bg-zinc-300 rounded-2xl transition-all ease duration-300 origin-bottom group-hover/folder:[transform:rotateX(-30deg)]"></div>
                     <div className="work-2 absolute inset-1 bg-zinc-200 rounded-2xl transition-all ease duration-300 origin-bottom group-hover/folder:[transform:rotateX(-38deg)]"></div>
 
-                    {/* Folder interior principal - culoare galbenă originală */}
+                    {/* Folder interior main - original yellow color */}
                     <div className="work-1 absolute bottom-0 bg-gradient-to-t from-amber-500 to-amber-400 w-full h-[156px] rounded-2xl rounded-tr-none after:absolute after:content-[''] after:bottom-[99%] after:right-0 after:w-[146px] after:h-[16px] after:bg-amber-400 after:rounded-t-2xl before:absolute before:content-[''] before:-top-[10px] before:right-[142px] before:size-3 before:bg-amber-400 before:[clip-path:polygon(100%_14%,50%_100%,100%_100%);] transition-all ease duration-300 origin-bottom flex items-end group-hover/folder:shadow-[inset_0_20px_40px_#fbbf24,_inset_0_-20px_40px_#d97706] group-hover/folder:[transform:rotateX(-46deg)_translateY(1px)]">
                       {/* Featured badge */}
                       {project.featured && (
@@ -328,7 +332,7 @@ const Projects = () => {
                   href={project.links.live}
                   className="inline-flex items-center text-sm font-medium text-green-400 hover:text-green-300 transition-colors"
                 >
-                  Vezi proiectul
+                  View project
                   <FiArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
                 </a>
               </div>
@@ -342,7 +346,7 @@ const Projects = () => {
             href="#"
             className="group inline-flex items-center gap-2 px-8 py-4 bg-gray-900/80 backdrop-blur-sm text-white font-medium rounded-md hover:bg-green-500 hover:text-black transition-all duration-300 border border-gray-800 hover:border-green-500 shadow-lg"
           >
-            Vezi toate proiectele
+            View all projects
             <FiArrowRight className="ml-1 group-hover:translate-x-1 transition-transform" />
           </a>
         </div>
